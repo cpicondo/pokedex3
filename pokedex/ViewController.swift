@@ -29,6 +29,8 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         collection.delegate = self
         searchBar.delegate = self
         
+        searchBar.returnKeyType = UIReturnKeyType.done
+        
         parsePokemonCSV()
         initAudio()
        
@@ -101,6 +103,19 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
+        var poke: Pokemon!
+        
+        if inSearchMode {
+            
+            poke = filteredPokemon[indexPath.row]
+            
+        } else {
+            
+            poke = pokemon[indexPath.row]
+            
+        }
+        performSegue(withIdentifier: "PokemonDetailVC", sender: poke)
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -128,12 +143,17 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             
             musicPlayer.pause()
             sender.alpha = 0.2
+            
         } else {
             
             musicPlayer.play()
             sender.alpha = 1.0
         }
-        print(inSearchMode)
+    }
+    
+    //Keyboard
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        view.endEditing(true)
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -141,7 +161,9 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         if searchBar.text == nil || searchBar.text == "" {
             inSearchMode = false
             collection.reloadData()
-            print(inSearchMode)
+            
+            //For Toggling Keyboard
+            view.endEditing(true)
             
         } else {
             inSearchMode = true
@@ -150,10 +172,21 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             
             filteredPokemon = pokemon.filter({$0.name.range(of: lower) != nil })
             collection.reloadData()
-            print(inSearchMode)
             
         }
         
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        if segue.identifier == "PokemonDetailVC" {
+            
+            if let detailsVC = segue.destination as? PokemonDetailVC {
+                if let poke = sender as? Pokemon {
+                    detailsVC.pokemon = poke
+                }
+            }
+        }
     }
 
 }
