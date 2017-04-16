@@ -156,6 +156,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         view.endEditing(true)
     }
     
+    //BoilerPlate for search = textdidchange
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         
         if searchBar.text == nil || searchBar.text == "" {
